@@ -2,6 +2,7 @@ import { sessionServices } from "../services/sessionServices.js";
 import { userServices } from "../services/userServices.js";
 import bcrypt from "bcrypt";
 
+// Регистрация
 export const register = async (req, res) => {
     try {
         const { name, email, password, passwordRepeat } = req.body;
@@ -32,6 +33,7 @@ export const register = async (req, res) => {
     };
 };
 
+// Авторизация
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -62,6 +64,7 @@ export const login = async (req, res) => {
     };
 };
 
+// Получение информации об пользователе
 export const getProfile = async (req, res) => {
     try {
         const sessionId = req.cookies.sessionId;
@@ -91,6 +94,7 @@ export const getProfile = async (req, res) => {
     };
 };
 
+// Выход из аккаунта
 export const logout = async (req, res) => {
     try {
         const sessionId = req.cookies.sessionId;
@@ -108,6 +112,68 @@ export const logout = async (req, res) => {
         });
 
         return res.status(200).json({ message: "Пользователь вышел" });
+    } catch (error) {
+        console.log(`Ошибка сервера: ${error}`);
+        return res.status(500).json({ message: "Ошибка сервера" });
+    };
+};
+
+// Отправка запросов в друзья 
+export const sendFriendRequest = async (req, res) => {
+    try {
+        const receiverId = req.params.id;
+        const senderId = req.user._id;
+
+        try {
+            await userServices.sendFriendsRequest(receiverId, senderId);
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        };
+
+        return res.status(200).json({ message: "Отправлен запрос в друзя" });
+    } catch (error) {
+        console.log(`Ошибка сервера: ${error}`);
+        return res.status(500).json({ message: "Ошибка сервера" });
+    };
+};
+
+// Принятие запроса
+export const acceptFriendRequest = async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        const requesterId = req.params.id;
+
+        try {
+            await userServices.acceptFriendRequest(currentUserId, requesterId);
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        };
+
+        return res.status(200).json({ message: "Пользователь добавлен в друзья" });
+    } catch (error) {
+        console.log(`Ошибка сервера: ${error}`);
+        return res.status(500).json({ message: "Ошибка сервера" });
+    };
+};
+
+// Получение списка друзей пользователя
+export const getUserFriends = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const friends = await userServices.getFriends(userId);
+        return res.status(200).json({ friends });
+    } catch (error) {
+        console.log(`Ошибка сервера: ${error}`);
+        return res.status(500).json({ message: "Ошибка сервера" });
+    };
+};
+
+// Получение списка запросов в друзья пользователя
+export const getUserRequests = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const requests = await userServices.getRequests(userId);
+        return res.status(200).json({ requests });
     } catch (error) {
         console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
