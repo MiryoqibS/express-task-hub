@@ -1,7 +1,9 @@
 import { sessionServices } from "../services/sessionServices.js";
+import { taskServices } from "../services/taskServices.js";
 import { userServices } from "../services/userServices.js";
 import bcrypt from "bcrypt";
 
+// === Система аккаунтов ===
 // Регистрация
 export const register = async (req, res) => {
     try {
@@ -54,8 +56,12 @@ export const login = async (req, res) => {
 
         res.cookie("sessionId", session._id, {
             httpOnly: true,
+            sameSite: "none",
+            secure: true,
             maxAge: 1000 * 60 * 60 * 24,
         });
+
+        console.log("session in login:", session);
 
         return res.status(200).json({ message: "Пользователь был найден", user });
     } catch (error) {
@@ -67,27 +73,26 @@ export const login = async (req, res) => {
 // Получение информации об пользователе
 export const getProfile = async (req, res) => {
     try {
-        const sessionId = req.cookies.sessionId;
+        const id = req.params.id;
 
-        if (!sessionId) {
-            return res.status(401).json({ message: "Не авторизован" });
+        if (id) {
+            const user = await userServices.findUserById(id);
+
+            if (!user) {
+                return res.status(401).json({ message: "Пользователь не был найден" });
+            };
+
+            const userTasks = await taskServices.findTasks(id);
+
+            const { password, ...safeUser } = user._doc;
+            safeUser.tasks = userTasks;
+
+            return res.status(200).json({ message: "Пользователь был найден", user: safeUser });
+        } else {
+            const { password, ...safeUser } = req.user._doc;
+
+            return res.status(200).json({ message: "Пользователь был найден", user: safeUser });
         };
-
-        const session = await sessionServices.findSession(sessionId);
-
-        if (!session || session.expiresAt < Date.now()) {
-            return res.status(401).json({ message: "Сессия не действительна" });
-        };
-
-        const user = await userServices.findUserById(session.userId);
-
-        if (!user) {
-            return res.status(401).json({ message: "Пользователь не был найден" });
-        };
-
-        const { password, ...safeUser } = user._doc;
-
-        return res.status(200).json({ message: "Пользователь был найден", user: safeUser });
     } catch (error) {
         console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
@@ -116,6 +121,39 @@ export const logout = async (req, res) => {
         console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
+};
+
+
+// === Система друзей ==
+// Получение списка друзей пользователя
+export const getUserFriends = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const friends = await userServices.getFriends(userId);
+        return res.status(200).json({ friends });
+    } catch (error) {
+        console.log(`Ошибка сервера: ${error}`);
+        return res.status(500).json({ message: "Ошибка сервера" });
+    };
+};
+
+// Удаление друга из списка
+export const removeUserFriend = async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        const friendId = req.params.id;
+
+        try {
+            await userServices.removeFriend(currentUserId, friendId);
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        };
+
+        return res.status(200).json({ message: "Ваш друг был удалён из списка" });
+    } catch (error) {
+        console.log(`Ошибка сервера: ${error}`);
+        return res.status(500).json({ message: "Ошибка сервера" })
+    }
 };
 
 // Отправка запросов в друзья 
@@ -156,12 +194,19 @@ export const acceptFriendRequest = async (req, res) => {
     };
 };
 
-// Получение списка друзей пользователя
-export const getUserFriends = async (req, res) => {
+// Отклонение запроса
+export const rejectFriendRequest = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const friends = await userServices.getFriends(userId);
-        return res.status(200).json({ friends });
+        const currentUserId = req.user._id;
+        const requesterId = req.params.id;
+
+        try {
+            await userServices.rejectFriendRequest(currentUserId, requesterId);
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        };
+
+        return res.status(200).json({ message: "Заявка в друзья была отклонена" })
     } catch (error) {
         console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });

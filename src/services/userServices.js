@@ -54,7 +54,7 @@ class UserServices {
     // Отправить запрос в друзья
     async sendFriendsRequest(receiverId, senderId) {
         try {
-            if (receiverId === senderId) {
+            if (receiverId.toString() === senderId.toString()) {
                 throw new Error("Нельзя добавить себя в друзья")
             };
 
@@ -98,7 +98,6 @@ class UserServices {
                 throw new Error("Один из пользователей не был найден");
             };
 
-
             if (!currentUser.friendRequest.includes(requesterId)) {
                 throw new Error("Нет такой заявки");
             };
@@ -124,6 +123,36 @@ class UserServices {
         }
     }
 
+    // Отклонение запроса в друзья
+    async rejectFriendRequest(currentUserId, requesterId) {
+        try {
+            const [currentUser, requester] = await Promise.all([
+                User.findById(currentUserId),
+                User.findById(requesterId),
+            ]);
+
+            if (!currentUser || !requester) {
+                throw new Error("Один из пользователей не был найден");
+            };
+
+            currentUser.friendRequest = currentUser.friendRequest.filter(id => {
+                return id.toString() !== requesterId.toString();
+            });
+
+            requester.sendRequests = requester.sendRequests.filter(id => {
+                return id.toString() !== currentUserId.toString();
+            });
+
+            await Promise.all([
+                currentUser.save(),
+                requester.save(),
+            ]);
+        } catch (error) {
+            console.log(error);
+            throw error;
+        };
+    }
+
     // Получение списка друзей пользователя
     async getFriends(userId) {
         try {
@@ -135,10 +164,36 @@ class UserServices {
         };
     }
 
+    // Получение входящих запросов
     async getRequests(userId) {
         try {
             const user = await User.findById(userId).populate("friendRequest");
             return user.friendRequest;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        };
+    }
+
+    // Удаление друга из списка
+    async removeFriend(userId, friendId) {
+        try {
+            const [user, friend] = await Promise.all([
+                User.findById(userId),
+                User.findById(friendId),
+            ]);
+
+            if (!user || !friend) {
+                throw new Error("Один из пользователей не был найден");
+            };
+
+            user.friends = user.friends.filter(id => id.toString() !== friendId.toString());
+            friend.friends = friend.friends.filter(id => id.toString() !== userId.toString());
+
+            await Promise.all([
+                user.save(),
+                friend.save(),
+            ]);
         } catch (error) {
             console.log(error);
             throw error;

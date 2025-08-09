@@ -11,8 +11,8 @@ export const authMiddleware = async (req, res, next) => {
 
         const session = await sessionServices.findSession(sessionId);
 
-        if (!session || session.expiresAt < Date.now()) {
-            return res.status(401).json({ message: "Сессия не действительна" })
+        if (!session || new Date(session.expiresAt).getTime() < Date.now()) {
+            return res.status(401).json({ message: `Сессия не действительна AUTHMIDDLEWARE ${sessionId}` })
         };
 
         const user = await userServices.findUserById(session.userId);
