@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTask, deleteTask, getTask, getTasks, updateTask } from "../controllers/tasksController.js";
+import { createTask, deleteTask, getTask, getTasks, updateTask } from "../controllers/taskController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 const router = Router();
 

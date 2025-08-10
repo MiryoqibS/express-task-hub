@@ -30,7 +30,6 @@ export const register = async (req, res) => {
 
         return res.status(201).json({ message: "Пользователь был создан", user });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" })
     };
 };
@@ -65,7 +64,6 @@ export const login = async (req, res) => {
 
         return res.status(200).json({ message: "Пользователь был найден", user });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" })
     };
 };
@@ -94,7 +92,6 @@ export const getProfile = async (req, res) => {
             return res.status(200).json({ message: "Пользователь был найден", user: safeUser });
         };
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -118,7 +115,6 @@ export const logout = async (req, res) => {
 
         return res.status(200).json({ message: "Пользователь вышел" });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -132,7 +128,6 @@ export const getUserFriends = async (req, res) => {
         const friends = await userServices.getFriends(userId);
         return res.status(200).json({ friends });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -151,7 +146,6 @@ export const removeUserFriend = async (req, res) => {
 
         return res.status(200).json({ message: "Ваш друг был удалён из списка" });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" })
     }
 };
@@ -170,7 +164,6 @@ export const sendFriendRequest = async (req, res) => {
 
         return res.status(200).json({ message: "Отправлен запрос в друзя" });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -189,7 +182,6 @@ export const acceptFriendRequest = async (req, res) => {
 
         return res.status(200).json({ message: "Пользователь добавлен в друзья" });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -208,7 +200,6 @@ export const rejectFriendRequest = async (req, res) => {
 
         return res.status(200).json({ message: "Заявка в друзья была отклонена" })
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -220,7 +211,6 @@ export const getUserRequests = async (req, res) => {
         const requests = await userServices.getRequests(userId);
         return res.status(200).json({ requests });
     } catch (error) {
-        console.log(`Ошибка сервера: ${error}`);
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };

@@ -3,11 +3,11 @@ import { register, login, getProfile, logout, getUserFriends, acceptFriendReques
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 const router = Router();
 
-router.post("/api/register", register);
-router.post("/api/login", login);
-router.get("/api/profile", authMiddleware, getProfile);
-router.get("/api/profile/:id", getProfile);
-router.get("/api/logout", logout);
+router.post("/api/user/register", register);
+router.post("/api/user/login", login);
+router.get("/api/user/profile", authMiddleware, getProfile);
+router.get("/api/user/profile/:id", getProfile);
+router.get("/api/user/logout", logout);
 
 router.get("/api/user/friends", authMiddleware, getUserFriends);
 router.delete("/api/user/friends/:id", authMiddleware, removeUserFriend);

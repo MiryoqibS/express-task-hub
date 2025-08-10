@@ -20,15 +20,15 @@ const userSchema = new mongoose.Schema({
         default: "user"
     },
     friends: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     }],
     friendRequest: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     }],
     sendRequests: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     }]
 });

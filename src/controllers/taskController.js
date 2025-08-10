@@ -6,7 +6,6 @@ export const createTask = async (req, res) => {
         const task = await taskServices.createTask({ title, description, userId: req.user._id });
         return res.status(201).json({ message: "Задача создана", task });
     } catch (error) {
-        console.log("Ошибка сервера");
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -16,7 +15,6 @@ export const getTasks = async (req, res) => {
         const tasks = await taskServices.findTasks(req.user._id);
         return res.status(200).json({ message: "Задачи пользователя найдены", tasks });
     } catch (error) {
-        console.log("Ошибка сервера");
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -27,7 +25,6 @@ export const getTask = async (req, res) => {
         const task = await taskServices.findTask(taskId);
         return res.status(200).json({ message: "Задача найдена", task });
     } catch (error) {
-        console.log("Ошибка сервера");
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -44,7 +41,6 @@ export const updateTask = async (req, res) => {
 
         return res.status(200).json({ message: "Задача обновлена", task: updated });
     } catch (error) {
-        console.log("Ошибка сервера");
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };
@@ -60,7 +56,6 @@ export const deleteTask = async (req, res) => {
 
         return res.status(200).json({ message: "Задача удалена" });
     } catch (error) {
-        console.log("Ошибка сервера");
         return res.status(500).json({ message: "Ошибка сервера" });
     };
 };

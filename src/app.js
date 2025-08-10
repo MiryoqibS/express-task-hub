@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
 import userRoutes from "./routes/userRoutes.js";
-import tasksRoutes from "./routes/tasksRoutes.js"
+import taskRoutes from "./routes/taskRoutes.js"
+import commentRoutes from "./routes/commentRoutes.js"
 
 const app = express();
 
@@ -16,6 +18,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use(userRoutes);
-app.use(tasksRoutes)
+app.use(taskRoutes);
+app.use(commentRoutes);
 
 export default app;

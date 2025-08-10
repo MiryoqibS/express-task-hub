@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 
 const sessionSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     expiresAt: {
         type: Date,
